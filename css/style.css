@@ -21,18 +21,18 @@
 /* ─── Light Mode ───────────────────────────────────────────── */
 /* Warm, soft, paper-like — inspired by luxury Islamic calligraphy paper */
 [data-theme="light"] {
-  --gold: #8B6914;
-  --gold-light: #6D520F;
+  --gold: #986F1D;
+  --gold-light: #7A5812;
   --gold-pale: #FBF7EF;
   --bg: #F2EDE4;
   --bg2: #FAF8F4;
   --bg3: #EDE8DF;
   --bg4: #E4DED3;
-  --text: #33302B;
-  --text2: #8A8279;
-  --green: #3D8B5E;
+  --text: #2A2520;
+  --text2: #6E6459;
+  --green: #2D7A4A;
   --red: #B5403A;
-  --blue: #4A7FB5;
+  --blue: #3A6FA5;
   --border: rgba(139,105,20,0.12);
   --shadow: 0 1px 4px rgba(80,60,20,0.07);
   --pattern-opacity: 0;
@@ -207,13 +207,13 @@
 
 [data-theme="light"] .scenario-header { background: rgba(139,105,20,0.05) !important; }
 
-[data-theme="light"] .val-gold { color: #8B6914; }
-[data-theme="light"] .val-green { color: #3D8B5E; }
+[data-theme="light"] .val-gold { color: #7A5812; }
+[data-theme="light"] .val-green { color: #2D7A4A; }
 
-[data-theme="light"] .badge-21 { background: rgba(139,105,20,0.1); color: #8B6914; }
-[data-theme="light"] .badge-24 { background: rgba(61,139,94,0.1); color: #3D8B5E; }
-[data-theme="light"] .badge-18 { background: rgba(74,127,181,0.1); color: #4A7FB5; }
-[data-theme="light"] .nisab-badge { background: rgba(139,105,20,0.1); color: #8B6914; }
+[data-theme="light"] .badge-21 { background: rgba(139,105,20,0.1); color: #7A5812; }
+[data-theme="light"] .badge-24 { background: rgba(61,139,94,0.1); color: #2D7A4A; }
+[data-theme="light"] .badge-18 { background: rgba(74,127,181,0.1); color: #3A6FA5; }
+[data-theme="light"] .nisab-badge { background: rgba(139,105,20,0.1); color: #7A5812; }
 
 [data-theme="light"] .hijri-date { color: var(--text2); }
 
@@ -224,7 +224,7 @@
 [data-theme="light"] .verse-box {
   background: linear-gradient(135deg, #FBF6EC, #F7F0E0);
   border-color: rgba(139,105,20,0.15);
-  color: #6D520F;
+  color: #5C4510;
 }
 
 [data-theme="light"] .verse-ref { color: var(--text2); }
@@ -270,7 +270,7 @@
 
 [data-theme="light"] .alert-banner.alert-warning {
   background: #FBF6EC;
-  color: #8B6914;
+  color: #7A5812;
   border-bottom-color: rgba(139,105,20,0.15);
 }
 
@@ -313,6 +313,16 @@
 [data-theme="light"] .empty-state { color: var(--text2); }
 [data-theme="light"] .card-sub { color: var(--text2); }
 [data-theme="light"] .card-label { color: var(--text2); }
+[data-theme="light"] .card.green .card-value { color: var(--green); }
+[data-theme="light"] .card.red .card-value { color: var(--red); }
+[data-theme="light"] .greg-date { color: var(--text); }
+[data-theme="light"] .price-setting label { color: var(--text2); }
+[data-theme="light"] .price-setting span { color: var(--text2); }
+[data-theme="light"] .form-group label { color: var(--text2); }
+[data-theme="light"] .filter-bar label { color: var(--text2); }
+[data-theme="light"] .section-title { color: var(--gold); }
+[data-theme="light"] .logo-text p { color: var(--text2); }
+[data-theme="light"] .nav-brand span { color: var(--gold); }
 
 /* ─── Theme Toggle Button ──────────────────────────────────── */
 .theme-toggle {
