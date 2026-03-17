@@ -727,7 +727,7 @@ document.getElementById('fDate').value = new Date().toISOString().slice(0,10);
 // ─── Hijri Helpers ────────────────────────────────────────────
 function getHijriComponents(date) {
   const d = typeof date === 'string' ? new Date(date + 'T12:00:00') : date;
-  const f = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+  const f = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
     year: 'numeric', month: 'numeric', day: 'numeric'
   });
   const parts = f.formatToParts(d);
