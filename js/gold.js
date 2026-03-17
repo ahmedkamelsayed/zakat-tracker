@@ -1,14 +1,14 @@
 // ─── Gold Zakat Logic ─────────────────────────────────────────
 
-// ─── Data Store ───────────────────────────────────────────────
-let entries = JSON.parse(localStorage.getItem('zakat_entries') || '[]');
-let goldPrice = parseFloat(localStorage.getItem('zakat_price') || '8366');
+// ─── Data Store (via ZakatStore) ─────────────────────────────
+let entries = ZakatStore.getGoldEntries();
+let goldPrice = ZakatStore.getGoldPrice() || 8366;
 let goldSortState = { col: null, asc: true };
 
 document.getElementById('goldPrice').value = goldPrice;
 document.getElementById('goldPrice').addEventListener('input', function () {
   goldPrice = parseFloat(this.value) || 0;
-  localStorage.setItem('zakat_price', goldPrice);
+  ZakatStore.setGoldPrice(goldPrice);
   render();
 });
 
@@ -26,7 +26,7 @@ async function fetchGoldPrice() {
     if (price) {
       goldPrice = price;
       document.getElementById('goldPrice').value = price;
-      localStorage.setItem('zakat_price', price);
+      ZakatStore.setGoldPrice(price);
       render();
       showToast('تم تحديث السعر: ' + price.toLocaleString('ar-EG') + ' جنيه', 'success');
     } else {
@@ -137,6 +137,7 @@ function render(sortOverride) {
     updateSummary(rows, nisabDate, nisabCumulative);
     renderAnnualSummary(rows);
     renderChart(rows);
+    renderDebtsAndPayments(rows);
     return;
   }
 
@@ -200,6 +201,7 @@ function render(sortOverride) {
   updateSummary(rows, nisabDate, nisabCumulative);
   renderAnnualSummary(rows);
   renderChart(rows);
+  renderDebtsAndPayments(rows);
 }
 
 function updateSummary(rows, nisabDate, nisabCumulative) {
@@ -227,8 +229,79 @@ function updateSummary(rows, nisabDate, nisabCumulative) {
     document.getElementById('zakatDueHijri').textContent = '';
   }
 
+  // ── Combined nisab info ──
+  const combinedInfo = ZakatStore.getCombinedNisabInfo(goldPrice);
+  const combinedEl = document.getElementById('combinedNisabInfo');
+  if (combinedEl) {
+    let combinedHTML = '';
+    combinedHTML += '<div class="card-label">النصاب المجمّع (ذهب + مال)</div>';
+    combinedHTML += '<div style="font-size:13px; margin-top:4px">';
+    combinedHTML += 'قيمة الذهب: ' + combinedInfo.totalGoldEGP.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م<br>';
+    combinedHTML += 'قيمة المال: ' + combinedInfo.totalCashEGP.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م<br>';
+    combinedHTML += 'الإجمالي: <strong>' + combinedInfo.combinedEGP.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م</strong><br>';
+    combinedHTML += 'نصاب الذهب: ' + combinedInfo.nisabEGP.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م<br>';
+    if (combinedInfo.reachedNisab) {
+      combinedHTML += '<span style="color:var(--green, #4CAF7A)">✅ بلغ النصاب المجمّع</span>';
+      if (combinedInfo.nisabDate) {
+        combinedHTML += '<br>تاريخ بلوغ النصاب المجمّع: ' + (typeof formatGreg === 'function' ? formatGreg(combinedInfo.nisabDate) : combinedInfo.nisabDate);
+      }
+    } else {
+      combinedHTML += '<span style="color:var(--red, #CF6679)">لم يبلغ النصاب المجمّع بعد</span>';
+    }
+    combinedHTML += '</div>';
+    combinedEl.innerHTML = combinedHTML;
+  }
+
+  // ── Debt deduction ──
+  const debtDeductionEl = document.getElementById('debtDeduction');
+  if (debtDeductionEl) {
+    const netDebt = DebtsManager.getTotalDebtsEGP(ZakatStore.getExchangeRates());
+    let debtHTML = '';
+    if (netDebt > 0) {
+      const zakatAfterDebt = Math.max(0, totalZ1 - (netDebt * 0.025));
+      debtHTML += '<div class="card-label">خصم الديون</div>';
+      debtHTML += '<div style="font-size:13px; margin-top:4px">';
+      debtHTML += 'صافي الديون عليك: <span style="color:var(--red, #CF6679)">' + netDebt.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م</span><br>';
+      debtHTML += 'الزكاة بعد خصم الديون: <strong>' + zakatAfterDebt.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م</strong>';
+      debtHTML += '</div>';
+    } else {
+      debtHTML += '<div class="card-label">خصم الديون</div>';
+      debtHTML += '<div style="font-size:13px; margin-top:4px; color:var(--green, #4CAF7A)">لا توجد ديون تُخصم</div>';
+    }
+    debtDeductionEl.innerHTML = debtHTML;
+  }
+
+  // ── Payment tracking / remaining zakat ──
+  const remainingEl = document.getElementById('remainingZakat');
+  if (remainingEl) {
+    const remaining = PaymentsManager.getRemainingForType('gold', totalZ1);
+    const paid = PaymentsManager.getTotalPaidForType('gold');
+    let remHTML = '';
+    remHTML += '<div class="card-label">متابعة السداد</div>';
+    remHTML += '<div style="font-size:13px; margin-top:4px">';
+    remHTML += 'المستحق: ' + totalZ1.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م<br>';
+    remHTML += 'المدفوع: <span style="color:var(--green, #4CAF7A)">' + paid.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م</span><br>';
+    if (remaining > 0) {
+      remHTML += 'المتبقي: <strong style="color:var(--red, #CF6679)">' + remaining.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م</strong>';
+    } else {
+      remHTML += '<strong style="color:var(--green, #4CAF7A)">✅ تم سداد الزكاة بالكامل</strong>';
+    }
+    remHTML += '</div>';
+    remainingEl.innerHTML = remHTML;
+  }
+
   document.getElementById('totalZakat1').textContent =
     totalZ1.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' جنيه';
+}
+
+// ─── Render Debts & Payments Sections ─────────────────────────
+function renderDebtsAndPayments(rows) {
+  if (document.getElementById('debtsContainer')) {
+    DebtsManager.renderDebtsSection('debtsContainer');
+  }
+  if (document.getElementById('paymentsContainer')) {
+    PaymentsManager.renderPaymentsSection('paymentsContainer', 'gold');
+  }
 }
 
 // ─── Annual Summary ───────────────────────────────────────────
@@ -325,7 +398,8 @@ function clearAll() {
 }
 
 function save() {
-  localStorage.setItem('zakat_entries', JSON.stringify(entries));
+  ZakatStore.setGoldEntries(entries);
+  ZakatStore.setGoldPrice(goldPrice);
 }
 
 // ─── Edit Modal ───────────────────────────────────────────────

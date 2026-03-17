@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة الزكاة - زكاة الأسهم</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E0E12">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="dashboard.html" class="nav-brand">
+      <div class="logo-icon">🌙</div>
+      <span>حاسبة الزكاة</span>
+    </a>
+    <button class="nav-toggle" aria-label="القائمة">☰</button>
+    <ul class="nav-links">
+      <li><a href="dashboard.html">🏠 الرئيسية</a></li>
+      <li><a href="index.html">🥇 زكاة الذهب</a></li>
+      <li><a href="money.html">💵 زكاة المال</a></li>
+      <li><a href="stocks.html" class="active">📈 زكاة الأسهم</a></li>
+      <li><a href="fitr.html">🌾 زكاة الفطر</a></li>
+      <li><a href="info.html">📖 معلومات</a></li>
+    </ul>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="تبديل الوضع الفاتح/الداكن">☀️</button>
+  </div>
+</nav>
+
+<!-- Alert Banner -->
+<div id="alertBanner" class="alert-banner"></div>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">📈</div>
+        <div class="logo-text">
+          <h1>حاسبة زكاة الأسهم والاستثمارات</h1>
+          <p>تتبع محفظتك الاستثمارية واحسب زكاتها</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Summary Cards -->
+  <div class="cards">
+    <div class="card">
+      <span class="card-icon">📊</span>
+      <div class="card-label">إجمالي المحفظة</div>
+      <div class="card-value" id="sTotalValue">0 ج.م</div>
+      <div class="card-sub" id="sTotalCount">0 أصل</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🧮</span>
+      <div class="card-label">الزكاة المستحقة</div>
+      <div class="card-value" id="sTotalZakat">0 ج.م</div>
+      <div class="card-sub">2.5% من قيمة أسهم المتاجرة + أرباح الاستثمار</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">📈</span>
+      <div class="card-label">أسهم المتاجرة</div>
+      <div class="card-value" id="sTradingValue">0 ج.م</div>
+      <div class="card-sub">زكاة على كامل القيمة</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🏦</span>
+      <div class="card-label">استثمارات طويلة الأجل</div>
+      <div class="card-value" id="sLongTermValue">0 ج.م</div>
+      <div class="card-sub">زكاة على الأرباح فقط</div>
+    </div>
+  </div>
+
+  <!-- Add Stock Form -->
+  <div class="form-section">
+    <div class="section-title">➕ إضافة سهم / استثمار</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>اسم السهم / الصندوق</label>
+        <input type="text" id="sName" placeholder="مثال: سهم CIB، صندوق الأهلي">
+      </div>
+      <div class="form-group">
+        <label>النوع</label>
+        <select id="sType">
+          <option value="stock">سهم</option>
+          <option value="fund">صندوق استثماري</option>
+          <option value="sukuk">صكوك</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>الغرض</label>
+        <select id="sPurpose" onchange="toggleDividendField()">
+          <option value="trading">متاجرة (بيع وشراء)</option>
+          <option value="long-term">استثمار طويل الأجل</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>عدد الأسهم / الوحدات</label>
+        <input type="number" id="sShares" min="1" step="1" placeholder="100">
+      </div>
+      <div class="form-group">
+        <label>سعر السهم الحالي</label>
+        <input type="number" id="sPrice" min="0.01" step="0.01" placeholder="50.00">
+      </div>
+      <div class="form-group">
+        <label>العملة</label>
+        <select id="sCurrency">
+          <option value="EGP">جنيه مصري (EGP)</option>
+          <option value="SAR">ريال سعودي (SAR)</option>
+          <option value="AED">درهم إماراتي (AED)</option>
+          <option value="USD">دولار أمريكي (USD)</option>
+          <option value="EUR">يورو (EUR)</option>
+          <option value="GBP">جنيه إسترليني (GBP)</option>
+          <option value="KWD">دينار كويتي (KWD)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>تاريخ الشراء</label>
+        <input type="date" id="sDate">
+      </div>
+      <div class="form-group" id="dividendGroup" style="display:none">
+        <label>مبلغ الأرباح (التوزيعات)</label>
+        <input type="number" id="sDividend" min="0" step="0.01" placeholder="إجمالي الأرباح المستلمة">
+      </div>
+      <div class="form-group" style="justify-content:flex-end">
+        <button class="btn btn-gold" onclick="addStock()">✓ إضافة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="section-title" style="margin:0">📊 سجل الأسهم والاستثمارات</div>
+      <div class="table-actions">
+        <button class="btn btn-outline" onclick="exportStocksCSV()">⬇ تصدير CSV</button>
+        <button class="btn btn-outline" onclick="printReport()">🖨️ طباعة</button>
+        <button class="btn btn-outline" onclick="clearAllStocks()" style="color:var(--red);border-color:rgba(207,102,121,0.3)">🗑 مسح الكل</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>تصفية النوع:
+        <select id="sFilterType" onchange="renderStocks()">
+          <option value="">الكل</option>
+          <option value="stock">أسهم</option>
+          <option value="fund">صناديق</option>
+          <option value="sukuk">صكوك</option>
+        </select>
+      </label>
+      <label>الغرض:
+        <select id="sFilterPurpose" onchange="renderStocks()">
+          <option value="">الكل</option>
+          <option value="trading">متاجرة</option>
+          <option value="long-term">استثمار</option>
+        </select>
+      </label>
+    </div>
+    <div class="table-wrap">
+      <table id="stocksTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th data-sort="name">الاسم</th>
+            <th>النوع</th>
+            <th>الغرض</th>
+            <th data-sort="shares">الأسهم</th>
+            <th data-sort="pricePerShare">سعر السهم</th>
+            <th>القيمة الإجمالية</th>
+            <th>القيمة بالجنيه</th>
+            <th>الأرباح</th>
+            <th class="gold-col">الزكاة المستحقة</th>
+            <th data-sort="dateAcquired">تاريخ الشراء</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="stocksBody">
+          <tr><td colspan="12"><div class="empty-state"><div class="icon">📈</div><p>ابدأ بإضافة أول سهم أو استثمار</p></div></td></tr>
+        </tbody>
+        <tfoot id="stocksFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-container" id="sChartSection" style="display:none">
+    <div class="section-title">📊 توزيع المحفظة</div>
+    <canvas id="stocksChart" height="300"></canvas>
+  </div>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="stockEditModal">
+  <div class="modal">
+    <h3>✏️ تعديل الاستثمار</h3>
+    <input type="hidden" id="seId">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="form-group" style="grid-column:1/-1">
+        <label>الاسم</label>
+        <input type="text" id="seName">
+      </div>
+      <div class="form-group">
+        <label>النوع</label>
+        <select id="seType">
+          <option value="stock">سهم</option>
+          <option value="fund">صندوق</option>
+          <option value="sukuk">صكوك</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>الغرض</label>
+        <select id="sePurpose">
+          <option value="trading">متاجرة</option>
+          <option value="long-term">استثمار</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>عدد الأسهم</label>
+        <input type="number" id="seShares" min="1" step="1">
+      </div>
+      <div class="form-group">
+        <label>سعر السهم</label>
+        <input type="number" id="sePrice" min="0.01" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>العملة</label>
+        <select id="seCurrency">
+          <option value="EGP">EGP</option>
+          <option value="SAR">SAR</option>
+          <option value="AED">AED</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="KWD">KWD</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>تاريخ الشراء</label>
+        <input type="date" id="seDate">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>مبلغ الأرباح (التوزيعات)</label>
+        <input type="number" id="seDividend" min="0" step="0.01">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeStockModal()">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveStockEdit()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="js/hijri.js"></script>
+<script src="js/api.js"></script>
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/debts.js"></script>
+<script src="js/payments.js"></script>
+<script src="js/stocks.js"></script>
+<script src="js/backup.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/profiles.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
+</body>
+</html>

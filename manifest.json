@@ -1,0 +1,24 @@
+{
+  "name": "حاسبة الزكاة",
+  "short_name": "الزكاة",
+  "start_url": "dashboard.html",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "ar",
+  "theme_color": "#0E0E12",
+  "background_color": "#0E0E12",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

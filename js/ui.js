@@ -226,4 +226,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initNav();
   checkZakatAlerts();
+
+  // Check browser notifications if enabled
+  if (typeof NotificationManager !== 'undefined' && NotificationManager.isEnabled()) {
+    NotificationManager.checkAndNotify();
+  }
 });

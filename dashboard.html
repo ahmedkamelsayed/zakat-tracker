@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة الزكاة - الرئيسية</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E0E12">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="dashboard.html" class="nav-brand">
+      <div class="logo-icon">🌙</div>
+      <span>حاسبة الزكاة</span>
+    </a>
+    <button class="nav-toggle" aria-label="القائمة">☰</button>
+    <ul class="nav-links">
+      <li><a href="dashboard.html" class="active">🏠 الرئيسية</a></li>
+      <li><a href="index.html">🥇 زكاة الذهب</a></li>
+      <li><a href="money.html">💵 زكاة المال</a></li>
+      <li><a href="stocks.html">📈 زكاة الأسهم</a></li>
+      <li><a href="fitr.html">🌾 زكاة الفطر</a></li>
+      <li><a href="info.html">📖 معلومات</a></li>
+    </ul>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="تبديل الوضع الفاتح/الداكن">☀️</button>
+  </div>
+</nav>
+
+<!-- Alert Banner -->
+<div id="alertBanner" class="alert-banner"></div>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">🏠</div>
+        <div class="logo-text">
+          <h1>لوحة التحكم</h1>
+          <p>نظرة شاملة على جميع أنواع الزكاة</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Summary Cards Row 1: Wealth -->
+  <div class="cards" id="wealthCards">
+    <div class="card">
+      <span class="card-icon">🥇</span>
+      <div class="card-label">قيمة الذهب</div>
+      <div class="card-value" id="dGoldValue">0 ج.م</div>
+      <div class="card-sub" id="dGoldWeight">0 جم عيار 24</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">💵</span>
+      <div class="card-label">إجمالي المال</div>
+      <div class="card-value" id="dMoneyValue">0 ج.م</div>
+      <div class="card-sub" id="dMoneyCount">0 معاملة</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">📈</span>
+      <div class="card-label">قيمة الأسهم</div>
+      <div class="card-value" id="dStocksValue">0 ج.م</div>
+      <div class="card-sub" id="dStocksCount">0 سهم</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">💎</span>
+      <div class="card-label">إجمالي الثروة</div>
+      <div class="card-value" id="dTotalWealth">0 ج.م</div>
+      <div class="card-sub" id="dNetWorth">صافي بعد الديون: 0 ج.م</div>
+    </div>
+  </div>
+
+  <!-- Summary Cards Row 2: Zakat -->
+  <div class="cards" id="zakatCards">
+    <div class="card">
+      <span class="card-icon">⚖️</span>
+      <div class="card-label">حالة النصاب</div>
+      <div class="card-value" id="dNisabStatus">—</div>
+      <div class="nisab-bar"><div class="nisab-fill" id="dNisabFill" style="width:0%"></div></div>
+      <div class="card-sub" id="dNisabSub"></div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🧮</span>
+      <div class="card-label">إجمالي الزكاة المستحقة</div>
+      <div class="card-value" id="dTotalZakatDue">0 ج.م</div>
+      <div class="card-sub">على جميع أنواع الأموال</div>
+    </div>
+    <div class="card green">
+      <span class="card-icon">✅</span>
+      <div class="card-label">إجمالي المدفوع</div>
+      <div class="card-value" id="dTotalPaid">0 ج.م</div>
+      <div class="card-sub" id="dPaidCount">0 دفعة</div>
+    </div>
+    <div class="card red">
+      <span class="card-icon">🔴</span>
+      <div class="card-label">المتبقي</div>
+      <div class="card-value" id="dRemaining">0 ج.م</div>
+      <div class="card-sub">الزكاة المستحقة - المدفوع</div>
+    </div>
+  </div>
+
+  <!-- Debt Summary -->
+  <div class="cards" id="debtCards">
+    <div class="card">
+      <span class="card-icon">📋</span>
+      <div class="card-label">إجمالي الديون عليك</div>
+      <div class="card-value" id="dTotalDebts">0 ج.م</div>
+      <div class="card-sub" id="dDebtCount">0 دين</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">💰</span>
+      <div class="card-label">صافي الثروة بعد الديون</div>
+      <div class="card-value" id="dNetWealth">0 ج.م</div>
+      <div class="card-sub">إجمالي الأصول - الديون</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="form-section">
+    <div class="section-title">⚡ وصول سريع</div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap">
+      <a href="index.html" class="btn btn-gold" style="text-decoration:none">🥇 حاسبة الذهب</a>
+      <a href="money.html" class="btn btn-gold" style="text-decoration:none">💵 حاسبة المال</a>
+      <a href="stocks.html" class="btn btn-gold" style="text-decoration:none">📈 حاسبة الأسهم</a>
+      <a href="fitr.html" class="btn btn-gold" style="text-decoration:none">🌾 زكاة الفطر</a>
+      <a href="info.html" class="btn btn-outline" style="text-decoration:none">📖 معلومات وأحكام</a>
+    </div>
+  </div>
+
+  <!-- Upcoming Due Dates -->
+  <div class="form-section" id="dueDatesSection">
+    <div class="section-title">📅 مواعيد الزكاة القادمة</div>
+    <div id="dueDatesList">
+      <div class="empty-state" style="padding:20px">
+        <p>لا توجد مواعيد قادمة</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Payments -->
+  <div class="table-section" id="recentPaymentsSection">
+    <div class="table-header">
+      <div class="section-title" style="margin:0">💳 آخر المدفوعات</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>النوع</th>
+            <th>الوصف</th>
+            <th>المبلغ</th>
+            <th>التاريخ</th>
+          </tr>
+        </thead>
+        <tbody id="recentPaymentsBody">
+          <tr><td colspan="5"><div class="empty-state" style="padding:20px"><p>لا توجد مدفوعات بعد</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-container" id="dashChartSection">
+    <div class="section-title">📊 توزيع الثروة</div>
+    <canvas id="wealthChart" height="300"></canvas>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="js/hijri.js"></script>
+<script src="js/api.js"></script>
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/debts.js"></script>
+<script src="js/payments.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/backup.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/profiles.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
+</body>
+</html>

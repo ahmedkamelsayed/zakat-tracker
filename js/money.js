@@ -4,10 +4,10 @@ const CURRENCY_SYMBOLS = {
   EGP: 'ج.م', SAR: 'ر.س', AED: 'د.إ', USD: '$', EUR: '€', GBP: '£', KWD: 'د.ك'
 };
 
-let moneyEntries = JSON.parse(localStorage.getItem('zakat_money_entries') || '[]');
-let moneyNisab = parseFloat(localStorage.getItem('zakat_money_nisab_value') || '0');
-let exchangeRates = JSON.parse(localStorage.getItem('zakat_exchange_rates') || '{}');
-// rates are stored as { USD: 50, EUR: 55, SAR: 13.3, ... } meaning 1 unit = X EGP
+let moneyEntries = ZakatStore.getMoneyEntries();
+let moneyNisab = ZakatStore.getMoneyNisab();
+let exchangeRates = ZakatStore.getExchangeRates();
+// rates are stored as { USD: 50, EUR: 55, SAR: 13.3, ..., _time: 1234567890 } meaning 1 unit = X EGP
 
 // Init
 document.getElementById('mDate').value = new Date().toISOString().slice(0, 10);
@@ -28,9 +28,9 @@ async function fetchExchangeRates() {
           ratesInEGP[code] = +(1 / rateFromEGP).toFixed(4);
         }
       }
+      ratesInEGP._time = Date.now();
       exchangeRates = ratesInEGP;
-      localStorage.setItem('zakat_exchange_rates', JSON.stringify(exchangeRates));
-      localStorage.setItem('zakat_exchange_rates_time', Date.now().toString());
+      ZakatStore.setExchangeRates(exchangeRates);
       return true;
     }
   } catch (e) {
@@ -55,13 +55,13 @@ function getExchangeRateDisplay(currency) {
 
 // ─── Nisab Calculation ────────────────────────────────────────
 // Nisab = 85g × gold 24k price in EGP
-// Try: 1) goldPrice from gold page localStorage, 2) fetch from API
+// Try: 1) goldPrice from gold page via ZakatStore, 2) fetch from API
 async function calcNisabAuto() {
   const nisabDisplay = document.getElementById('moneyNisab');
   const statusEl = document.getElementById('nisabStatus');
 
-  // Method 1: use gold price from gold page
-  let goldPrice = parseFloat(localStorage.getItem('zakat_price') || '0');
+  // Method 1: use gold price from ZakatStore
+  let goldPrice = ZakatStore.getGoldPrice();
 
   // Method 2: fetch if not available or zero
   if (!goldPrice) {
@@ -76,10 +76,22 @@ async function calcNisabAuto() {
   if (goldPrice > 0) {
     moneyNisab = goldPrice * NISAB_GRAMS;
     nisabDisplay.value = Math.round(moneyNisab);
-    localStorage.setItem('zakat_money_nisab_value', moneyNisab.toString());
+    ZakatStore.setMoneyNisab(moneyNisab);
     if (statusEl) {
       statusEl.textContent = `(85 جم × ${goldPrice.toLocaleString('ar-EG')} ج.م = ${Math.round(moneyNisab).toLocaleString('ar-EG')} ج.م)`;
     }
+
+    // Combined nisab info display
+    const combined = ZakatStore.getCombinedNisabInfo(goldPrice);
+    const combinedEl = document.getElementById('nisabCombinedInfo');
+    if (combinedEl && combined) {
+      combinedEl.innerHTML =
+        `<strong>النصاب المجمع:</strong> ذهب ${combined.totalGoldEGP.toLocaleString('ar-EG', { maximumFractionDigits: 0 })} ج.م` +
+        ` + مال ${combined.totalCashEGP.toLocaleString('ar-EG', { maximumFractionDigits: 0 })} ج.م` +
+        ` = ${combined.combinedEGP.toLocaleString('ar-EG', { maximumFractionDigits: 0 })} ج.م` +
+        (combined.reachedNisab ? ' ✅ بلغ النصاب' : ` (النصاب ${combined.nisabEGP.toLocaleString('ar-EG', { maximumFractionDigits: 0 })} ج.م)`);
+    }
+
     return true;
   }
 
@@ -96,7 +108,7 @@ document.getElementById('moneyNisab').addEventListener('dblclick', function () {
 document.getElementById('moneyNisab').addEventListener('blur', function () {
   this.setAttribute('readonly', '');
   moneyNisab = parseFloat(this.value) || 0;
-  localStorage.setItem('zakat_money_nisab_value', moneyNisab.toString());
+  ZakatStore.setMoneyNisab(moneyNisab);
   renderMoney();
 });
 
@@ -107,6 +119,7 @@ function computeMoney() {
   let cumulative = 0; // always in EGP
   let nisabIndex = -1;
   let nisabDate = null;
+  let wasAboveNisab = false;
 
   const rows = sorted.map((e, i) => {
     const amountEGP = toEGP(e.amount, e.currency);
@@ -123,10 +136,23 @@ function computeMoney() {
       rowIndex: i
     };
 
+    // Hawl reset tracking: if cumulative drops below nisab after being above it
+    if (wasAboveNisab && cumulative < moneyNisab && moneyNisab > 0) {
+      row.hawlReset = true;
+      nisabIndex = -1;
+      nisabDate = null;
+      wasAboveNisab = false;
+    }
+
     if (nisabIndex === -1 && cumulative >= moneyNisab && moneyNisab > 0) {
       nisabIndex = i;
       nisabDate = e.date;
       row.isNisabRow = true;
+      wasAboveNisab = true;
+    }
+
+    if (cumulative >= moneyNisab && moneyNisab > 0) {
+      wasAboveNisab = true;
     }
 
     return row;
@@ -200,6 +226,7 @@ function renderMoney() {
 
   tbody.innerHTML = filtered.map((row, i) => {
     const isNisab = row.isNisabRow;
+    const isHawlReset = row.hawlReset;
     const hijriStr = getHijriString(row.date);
     const typeLabel = row.type === 'income'
       ? '<span style="color:var(--green)">إيداع</span>'
@@ -224,10 +251,15 @@ function renderMoney() {
       ? row.amount.toLocaleString('ar-EG')
       : `<strong>${row.amountEGP.toLocaleString('ar-EG', { maximumFractionDigits: 0 })}</strong>`;
 
+    // Badges
+    let badges = '';
+    if (isNisab) badges += '<br><span class="nisab-badge">★ يوم النصاب</span>';
+    if (isHawlReset) badges += '<br><span class="nisab-badge" style="background:var(--red,#CF6679);color:#fff">↺ إعادة حول</span>';
+
     return `
-      <tr class="${isNisab ? 'nisab-row' : ''} fade-in">
+      <tr class="${isNisab ? 'nisab-row' : ''} ${isHawlReset ? 'hawl-reset-row' : ''} fade-in">
         <td>${i + 1}</td>
-        <td><strong>${row.desc || '—'}</strong>${isNisab ? '<br><span class="nisab-badge">★ يوم النصاب</span>' : ''}</td>
+        <td><strong>${row.desc || '—'}</strong>${badges}</td>
         <td>${row.amount.toLocaleString('ar-EG')} ${CURRENCY_SYMBOLS[row.currency] || row.currency}</td>
         <td>${row.currency}</td>
         <td>${rateStr}</td>
@@ -252,6 +284,14 @@ function renderMoney() {
   const totalCum = rows.length > 0 ? rows[rows.length - 1].cumulative : 0;
   const totalEGP = rows.reduce((s, r) => s + (r.type === 'income' ? r.amountEGP : -r.amountEGP), 0);
 
+  // Debt deduction
+  const totalDebtsEGP = DebtsManager.getTotalDebtsEGP(exchangeRates);
+  const zakatableWealth = Math.max(0, totalCum - Math.max(0, totalDebtsEGP));
+  const zakatAfterDebt = zakatableWealth * 0.025;
+
+  // Payment tracking
+  const remaining = PaymentsManager.getRemainingForType('money', totalZ1);
+
   tfoot.innerHTML = `
     <tr class="totals-row">
       <td colspan="5" style="text-align:right">المجموع</td>
@@ -262,11 +302,33 @@ function renderMoney() {
       <td>${totalZ1.toLocaleString('ar-EG', { maximumFractionDigits: 2 })} ج.م</td>
       <td>${totalZ2.toLocaleString('ar-EG', { maximumFractionDigits: 2 })} ج.م</td>
       <td></td>
-    </tr>`;
+    </tr>
+    ${totalDebtsEGP > 0 ? `
+    <tr class="totals-row" style="font-size:12px">
+      <td colspan="7" style="text-align:right">بعد خصم الديون (${totalDebtsEGP.toLocaleString('ar-EG', { maximumFractionDigits: 0 })} ج.م)</td>
+      <td>${zakatableWealth.toLocaleString('ar-EG')} ج.م</td>
+      <td colspan="3"></td>
+      <td>${zakatAfterDebt.toLocaleString('ar-EG', { maximumFractionDigits: 2 })} ج.م</td>
+      <td colspan="2"></td>
+    </tr>` : ''}
+    ${remaining < totalZ1 ? `
+    <tr class="totals-row" style="font-size:12px;color:var(--green,#4CAF7A)">
+      <td colspan="11" style="text-align:right">المتبقي بعد المدفوعات</td>
+      <td>${remaining.toLocaleString('ar-EG', { maximumFractionDigits: 2 })} ج.م</td>
+      <td colspan="2"></td>
+    </tr>` : ''}`;
 
   updateMoneySummary(rows, nisabDate);
   renderMoneyAnnual(rows);
   renderMoneyChart(rows);
+
+  // Render debts and payments sections if containers exist
+  if (document.getElementById('debtsContainer')) {
+    DebtsManager.renderDebtsSection('debtsContainer');
+  }
+  if (document.getElementById('paymentsContainer')) {
+    PaymentsManager.renderPaymentsSection('paymentsContainer', 'money');
+  }
 }
 
 function updateMoneySummary(rows, nisabDate) {
@@ -291,7 +353,7 @@ function updateMoneySummary(rows, nisabDate) {
     const dueDate = addOneHijriYear(nisabDate);
     document.getElementById('mZakatDueDate').textContent = dueDate.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
     document.getElementById('mZakatDueHijri').textContent = getHijriString(dueDate);
-    localStorage.setItem('zakat_money_nisab', JSON.stringify({ date: nisabDate }));
+    ZakatStore.setMoneyEntries(moneyEntries); // persist any computed state
   } else {
     document.getElementById('mNisabDate').textContent = 'لم يبلغ النصاب بعد';
     document.getElementById('mNisabHijri').textContent = '';
@@ -299,7 +361,23 @@ function updateMoneySummary(rows, nisabDate) {
     document.getElementById('mZakatDueHijri').textContent = '';
   }
 
-  document.getElementById('mTotalZakat').textContent = totalZ1.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م';
+  // Debt deduction info
+  const totalDebtsEGP = DebtsManager.getTotalDebtsEGP(exchangeRates);
+  const zakatableWealth = Math.max(0, totalCum - Math.max(0, totalDebtsEGP));
+  const zakatAfterDebt = totalDebtsEGP > 0 ? zakatableWealth * 0.025 : totalZ1;
+
+  // Payment tracking
+  const remaining = PaymentsManager.getRemainingForType('money', zakatAfterDebt);
+
+  let zakatText = zakatAfterDebt.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ج.م';
+  if (totalDebtsEGP > 0) {
+    zakatText += ` (بعد خصم ديون ${totalDebtsEGP.toLocaleString('ar-EG', { maximumFractionDigits: 0 })} ج.م)`;
+  }
+  if (remaining < zakatAfterDebt) {
+    zakatText += ` — المتبقي: ${remaining.toLocaleString('ar-EG', { maximumFractionDigits: 2 })} ج.م`;
+  }
+
+  document.getElementById('mTotalZakat').textContent = zakatText;
 }
 
 // ─── Annual Summary ───────────────────────────────────────────
@@ -397,7 +475,7 @@ function clearAllMoney() {
 }
 
 function saveMoney() {
-  localStorage.setItem('zakat_money_entries', JSON.stringify(moneyEntries));
+  ZakatStore.setMoneyEntries(moneyEntries);
 }
 
 // ─── Edit Modal ───────────────────────────────────────────────
@@ -484,7 +562,7 @@ initSortableTable('moneyTable', renderMoney);
   document.getElementById('mNisabProgress').textContent = 'جاري تحميل البيانات...';
 
   // 1. Fetch exchange rates (if stale or missing)
-  const ratesTime = parseInt(localStorage.getItem('zakat_exchange_rates_time') || '0');
+  const ratesTime = parseInt(exchangeRates._time || '0');
   const ratesAge = Date.now() - ratesTime;
   if (!exchangeRates.USD || ratesAge > 6 * 60 * 60 * 1000) { // refresh every 6 hours
     await fetchExchangeRates();

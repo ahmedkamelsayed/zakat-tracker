@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>حاسبة الزكاة - زكاة المال</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E0E12">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -13,15 +15,18 @@
 <!-- Navigation -->
 <nav class="top-nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">
+    <a href="dashboard.html" class="nav-brand">
       <div class="logo-icon">🌙</div>
       <span>حاسبة الزكاة</span>
     </a>
     <button class="nav-toggle" aria-label="القائمة">☰</button>
     <ul class="nav-links">
+      <li><a href="dashboard.html">🏠 الرئيسية</a></li>
       <li><a href="index.html">🥇 زكاة الذهب</a></li>
       <li><a href="money.html" class="active">💵 زكاة المال</a></li>
-      <li><a href="info.html">📖 معلومات وأسئلة</a></li>
+      <li><a href="stocks.html">📈 زكاة الأسهم</a></li>
+      <li><a href="fitr.html">🌾 زكاة الفطر</a></li>
+      <li><a href="info.html">📖 معلومات</a></li>
     </ul>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="تبديل الوضع الفاتح/الداكن">☀️</button>
   </div>
@@ -209,6 +214,12 @@
     <canvas id="moneyChart" height="300"></canvas>
   </div>
 
+  <!-- Debts Section -->
+  <div id="debtsContainer"></div>
+
+  <!-- Payment Tracking -->
+  <div id="paymentsContainer"></div>
+
 </div>
 
 <!-- Edit Modal -->
@@ -259,7 +270,14 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script src="js/hijri.js"></script>
 <script src="js/api.js"></script>
+<script src="js/store.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/debts.js"></script>
+<script src="js/payments.js"></script>
 <script src="js/money.js"></script>
+<script src="js/backup.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/profiles.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
 </body>
 </html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة الزكاة - زكاة الفطر</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E0E12">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="dashboard.html" class="nav-brand">
+      <div class="logo-icon">🌙</div>
+      <span>حاسبة الزكاة</span>
+    </a>
+    <button class="nav-toggle" aria-label="القائمة">☰</button>
+    <ul class="nav-links">
+      <li><a href="dashboard.html">🏠 الرئيسية</a></li>
+      <li><a href="index.html">🥇 زكاة الذهب</a></li>
+      <li><a href="money.html">💵 زكاة المال</a></li>
+      <li><a href="stocks.html">📈 زكاة الأسهم</a></li>
+      <li><a href="fitr.html" class="active">🌾 زكاة الفطر</a></li>
+      <li><a href="info.html">📖 معلومات</a></li>
+    </ul>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="تبديل الوضع الفاتح/الداكن">☀️</button>
+  </div>
+</nav>
+
+<!-- Alert Banner -->
+<div id="alertBanner" class="alert-banner"></div>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">🌾</div>
+        <div class="logo-text">
+          <h1>حاسبة زكاة الفطر</h1>
+          <p>احسب زكاة الفطر لعائلتك وسجّل دفعاتك سنويا</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Summary Cards -->
+  <div class="cards">
+    <div class="card">
+      <span class="card-icon">👨‍👩‍👧‍👦</span>
+      <div class="card-label">عدد أفراد الأسرة</div>
+      <div class="card-value" id="fMemberCount">0</div>
+      <div class="card-sub">يشمل رب الأسرة</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🌾</span>
+      <div class="card-label">نوع الحبوب</div>
+      <div class="card-value" id="fGrainLabel">أرز</div>
+      <div class="card-sub" id="fPricePerSa">سعر الصاع: 0 ج.م</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">💰</span>
+      <div class="card-label">إجمالي زكاة الفطر</div>
+      <div class="card-value" id="fTotal">0 ج.م</div>
+      <div class="card-sub">= عدد الأفراد &times; سعر الصاع</div>
+    </div>
+    <div class="card" id="fStatusCard">
+      <span class="card-icon">📅</span>
+      <div class="card-label" id="fYearLabel">السنة الهجرية</div>
+      <div class="card-value" id="fPayStatus">لم تُدفع بعد</div>
+      <div class="card-sub" id="fPayStatusSub">يجب إخراجها قبل صلاة العيد</div>
+    </div>
+  </div>
+
+  <!-- Grain Type & Price -->
+  <div class="form-section">
+    <div class="section-title">🌾 إعدادات زكاة الفطر</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>نوع الحبوب</label>
+        <select id="fGrainType" onchange="updateGrainPrice()">
+          <option value="rice">أرز</option>
+          <option value="wheat">قمح</option>
+          <option value="dates">تمر</option>
+          <option value="raisins">زبيب</option>
+          <option value="custom">مخصص</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>سعر الصاع (ج.م)</label>
+        <input type="number" id="fSaPrice" min="1" step="1" value="35" onchange="recalcFitr()">
+      </div>
+      <div class="form-group">
+        <label>عدد أفراد الأسرة</label>
+        <input type="number" id="fNumMembers" min="1" step="1" value="1" onchange="recalcFitr()">
+      </div>
+    </div>
+
+    <div style="margin-top:16px; padding:12px; background:rgba(201,168,76,0.08); border-radius:var(--radius); font-size:13px; color:var(--text2)">
+      <strong>ملاحظة:</strong> الصاع يعادل تقريبا 3 كيلوجرام. الأسعار التقريبية:
+      أرز (35 ج.م) — قمح (25 ج.م) — تمر (50 ج.م) — زبيب (80 ج.م).
+      يمكنك تعديل السعر حسب بلدك ومنطقتك.
+    </div>
+  </div>
+
+  <!-- Family Members -->
+  <div class="form-section">
+    <div class="section-title">👨‍👩‍👧‍👦 أفراد الأسرة (اختياري)</div>
+    <div class="form-grid" style="grid-template-columns:1fr auto">
+      <div class="form-group">
+        <label>اسم الفرد</label>
+        <input type="text" id="fMemberName" placeholder="مثال: أحمد، فاطمة...">
+      </div>
+      <div class="form-group" style="justify-content:flex-end">
+        <button class="btn btn-gold" onclick="addMember()">➕ إضافة</button>
+      </div>
+    </div>
+
+    <div id="membersList" style="margin-top:12px"></div>
+  </div>
+
+  <!-- Mark as Paid -->
+  <div class="form-section">
+    <div class="section-title">✅ حالة الدفع للسنة الحالية</div>
+    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap">
+      <span id="fCurrentYear" style="font-size:18px; font-weight:700; color:var(--gold-light)"></span>
+      <button class="btn btn-gold" id="fPayBtn" onclick="togglePaid()">✅ تم الدفع</button>
+      <span id="fPaidLabel" style="font-size:14px; color:var(--green); display:none">تم دفع زكاة الفطر لهذه السنة</span>
+    </div>
+  </div>
+
+  <!-- Historical Records -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="section-title" style="margin:0">📅 سجل زكاة الفطر السنوي</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>السنة الهجرية</th>
+            <th>عدد الأفراد</th>
+            <th>نوع الحبوب</th>
+            <th>سعر الصاع</th>
+            <th>الإجمالي</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody id="fitrHistoryBody">
+          <tr><td colspan="6"><div class="empty-state" style="padding:20px"><p>لا توجد سجلات بعد</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/hijri.js"></script>
+<script src="js/api.js"></script>
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/debts.js"></script>
+<script src="js/payments.js"></script>
+<script src="js/fitr.js"></script>
+<script src="js/backup.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/profiles.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
+</body>
+</html>
