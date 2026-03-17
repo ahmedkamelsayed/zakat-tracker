@@ -1,4 +1,4 @@
-/* ─── CSS Variables ─────────────────────────────────────────── */
+/* ─── CSS Variables — Dark Mode (default) ──────────────────── */
 :root {
   --gold: #C9A84C;
   --gold-light: #F0C96A;
@@ -14,6 +14,98 @@
   --blue: #5B9BD5;
   --border: rgba(201,168,76,0.2);
   --radius: 12px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --pattern-opacity: 0.015;
+}
+
+/* ─── Light Mode ───────────────────────────────────────────── */
+[data-theme="light"] {
+  --gold: #A68A2E;
+  --gold-light: #8B7424;
+  --gold-pale: #F5E6B8;
+  --bg: #F5F0E8;
+  --bg2: #FFFFFF;
+  --bg3: #F0EBE1;
+  --bg4: #E8E2D6;
+  --text: #2C2416;
+  --text2: #6B5D4A;
+  --green: #2E8B57;
+  --red: #C0392B;
+  --blue: #2E6DA4;
+  --border: rgba(166,138,46,0.25);
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --pattern-opacity: 0.04;
+}
+
+[data-theme="light"] body::before {
+  background-image:
+    repeating-linear-gradient(60deg, transparent, transparent 40px, rgba(166,138,46,0.04) 40px, rgba(166,138,46,0.04) 41px),
+    repeating-linear-gradient(-60deg, transparent, transparent 40px, rgba(166,138,46,0.04) 40px, rgba(166,138,46,0.04) 41px);
+}
+
+[data-theme="light"] .card::before {
+  background: linear-gradient(90deg, var(--gold), #D4A017);
+}
+
+[data-theme="light"] .nisab-fill {
+  background: linear-gradient(90deg, var(--gold), #D4A017);
+}
+
+[data-theme="light"] .btn-gold {
+  background: linear-gradient(135deg, #C9A84C, #D4B454);
+  color: #fff;
+}
+
+[data-theme="light"] thead th {
+  background: var(--bg3);
+  color: var(--text2);
+}
+
+[data-theme="light"] .totals-row td {
+  background: var(--bg3);
+  color: var(--gold);
+}
+
+[data-theme="light"] .badge-21 { background: rgba(166,138,46,0.12); color: var(--gold); }
+[data-theme="light"] .badge-24 { background: rgba(46,139,87,0.12); color: var(--green); }
+[data-theme="light"] .badge-18 { background: rgba(46,109,164,0.12); color: var(--blue); }
+
+[data-theme="light"] .verse-box {
+  background: rgba(166,138,46,0.08);
+  border-color: rgba(166,138,46,0.3);
+  color: var(--gold);
+}
+
+[data-theme="light"] .faq-item { background: var(--bg2); }
+[data-theme="light"] .category-card { background: var(--bg3); }
+
+[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(166,138,46,0.3); }
+
+/* ─── Theme Toggle Button ──────────────────────────────────── */
+.theme-toggle {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 18px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  border-color: var(--gold);
+  background: var(--bg4);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }

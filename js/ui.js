@@ -1,5 +1,31 @@
 // ─── Shared UI Components ─────────────────────────────────────
 
+// ─── Theme Toggle (Light/Dark) ────────────────────────────────
+function initTheme() {
+  const saved = localStorage.getItem('zakat_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcon(saved);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('zakat_theme', next);
+  updateThemeIcon(next);
+}
+
+function updateThemeIcon(theme) {
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+// Apply theme immediately (before DOMContentLoaded) to prevent flash
+(function() {
+  const saved = localStorage.getItem('zakat_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+
 // ─── Navigation Toggle ────────────────────────────────────────
 function initNav() {
   const toggle = document.querySelector('.nav-toggle');
@@ -184,8 +210,20 @@ function renderGrowthChart(canvasId, labels, datasets) {
   return chart;
 }
 
+// ─── Chart colors adapt to theme ──────────────────────────────
+function getChartTextColor() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  return theme === 'light' ? '#6B5D4A' : '#A89F8C';
+}
+
+function getChartGridColor() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  return theme === 'light' ? 'rgba(166,138,46,0.12)' : 'rgba(201,168,76,0.1)';
+}
+
 // ─── Common Init ──────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   initNav();
   checkZakatAlerts();
 });
