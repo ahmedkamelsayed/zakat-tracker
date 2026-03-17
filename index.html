@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة زكاة الذهب</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0C96A;
+    --gold-pale: #F5E6B8;
+    --bg: #0E0E12;
+    --bg2: #16161E;
+    --bg3: #1E1E2A;
+    --bg4: #26263A;
+    --text: #EDE8DC;
+    --text2: #A89F8C;
+    --green: #4CAF7A;
+    --red: #CF6679;
+    --border: rgba(201,168,76,0.2);
+    --radius: 12px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Tajawal', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Geometric background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(60deg, transparent, transparent 40px, rgba(201,168,76,0.015) 40px, rgba(201,168,76,0.015) 41px),
+      repeating-linear-gradient(-60deg, transparent, transparent 40px, rgba(201,168,76,0.015) 40px, rgba(201,168,76,0.015) 41px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+  /* Header */
+  header {
+    background: linear-gradient(180deg, rgba(201,168,76,0.08) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 0;
+    margin-bottom: 32px;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .logo-text h1 {
+    font-family: 'Amiri', serif;
+    font-size: 24px;
+    color: var(--gold-light);
+    line-height: 1.2;
+  }
+
+  .logo-text p {
+    font-size: 12px;
+    color: var(--text2);
+    font-weight: 300;
+  }
+
+  .price-setting {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+  }
+
+  .price-setting label {
+    font-size: 13px;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+
+  .price-setting input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--gold-light);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 6px 12px;
+    width: 120px;
+    text-align: center;
+    outline: none;
+    transition: border-color .2s;
+  }
+
+  .price-setting input:focus { border-color: var(--gold); }
+
+  .price-setting span {
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  /* Summary Cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s, border-color .2s;
+  }
+
+  .card:hover { transform: translateY(-2px); border-color: rgba(201,168,76,0.4); }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    opacity: 0.6;
+  }
+
+  .card-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .card-label {
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .card-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold-light);
+  }
+
+  .card-sub {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+
+  .card.green .card-value { color: var(--green); }
+  .card.red .card-value { color: var(--red); }
+
+  /* Nisab progress */
+  .nisab-bar {
+    margin-top: 10px;
+    background: var(--bg4);
+    border-radius: 99px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .nisab-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    transition: width .5s ease;
+  }
+
+  /* Form */
+  .form-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+
+  .section-title {
+    font-family: 'Amiri', serif;
+    font-size: 18px;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    align-items: end;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .form-group label {
+    font-size: 12px;
+    color: var(--text2);
+    font-weight: 500;
+  }
+
+  .form-group input,
+  .form-group select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color .2s;
+    width: 100%;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus { border-color: var(--gold); }
+
+  .form-group select option { background: var(--bg3); }
+
+  .btn {
+    padding: 11px 24px;
+    border-radius: 8px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: #0E0E12;
+  }
+
+  .btn-gold:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  .btn-danger {
+    background: transparent;
+    border: 1px solid rgba(207,102,121,0.3);
+    color: var(--red);
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .btn-danger:hover { background: rgba(207,102,121,0.1); }
+
+  /* Table */
+  .table-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+
+  .table-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .table-wrap { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    background: var(--bg3);
+    padding: 12px 14px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text2);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+  }
+
+  thead th.gold-col { color: var(--gold); }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background .15s;
+  }
+
+  tbody tr:hover { background: rgba(201,168,76,0.04); }
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody tr.nisab-row { background: rgba(201,168,76,0.06); }
+  tbody tr.nisab-row td { border-top: 1px solid rgba(201,168,76,0.3); }
+
+  td {
+    padding: 12px 14px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-21 { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .badge-24 { background: rgba(76,175,122,0.15); color: var(--green); }
+
+  .nisab-badge {
+    background: rgba(201,168,76,0.2);
+    color: var(--gold-light);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    display: inline-block;
+    margin-top: 2px;
+  }
+
+  .val-zero { color: var(--text2); }
+  .val-gold { color: var(--gold-light); font-weight: 600; }
+  .val-green { color: var(--green); font-weight: 600; }
+
+  .hijri-date { font-size: 12px; color: var(--text2); }
+  .greg-date { font-size: 12px; }
+
+  /* Scenario columns header */
+  .scenario-header {
+    background: rgba(201,168,76,0.08) !important;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+  }
+
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+  .empty-state p { font-size: 14px; }
+
+  /* Totals row */
+  .totals-row td {
+    background: var(--bg3);
+    font-weight: 700;
+    border-top: 2px solid var(--border);
+    color: var(--gold-light);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 420px;
+    width: 90%;
+    animation: modalIn .2s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal h3 {
+    font-family: 'Amiri', serif;
+    font-size: 20px;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .modal .form-grid { grid-template-columns: 1fr 1fr; }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+
+  /* Tooltip */
+  [data-tip] { position: relative; cursor: help; }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg4);
+    color: var(--text);
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    z-index: 100;
+    border: 1px solid var(--border);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .cards { grid-template-columns: 1fr 1fr; }
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .header-inner { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (max-width: 480px) {
+    .cards { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { animation: fadeIn .3s ease forwards; }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.8) sepia(1) saturate(2) hue-rotate(10deg);
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">🌙</div>
+        <div class="logo-text">
+          <h1>حاسبة زكاة الذهب</h1>
+          <p>تتبع زكاتك بدقة وفق التقويم الهجري</p>
+        </div>
+      </div>
+      <div class="price-setting">
+        <label>سعر جرام عيار 24 الآن:</label>
+        <input type="number" id="goldPrice" value="8366" min="1" step="1">
+        <span>جنيه</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Summary Cards -->
+  <div class="cards" id="summaryCards">
+    <div class="card">
+      <span class="card-icon">⚖️</span>
+      <div class="card-label">إجمالي الوزن (عيار 24)</div>
+      <div class="card-value" id="totalWeight">0 جم</div>
+      <div class="nisab-bar"><div class="nisab-fill" id="nisabFill" style="width:0%"></div></div>
+      <div class="card-sub" id="nisabProgress">النصاب: 85 جرام</div>
+    </div>
+    <div class="card" id="nisabCard">
+      <span class="card-icon">📅</span>
+      <div class="card-label">تاريخ بلوغ النصاب</div>
+      <div class="card-value" id="nisabDate">—</div>
+      <div class="card-sub" id="nisabHijri"></div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔔</span>
+      <div class="card-label">موعد إخراج الزكاة</div>
+      <div class="card-value" id="zakatDueDate">—</div>
+      <div class="card-sub" id="zakatDueHijri"></div>
+    </div>
+    <div class="card">
+      <span class="card-icon">💰</span>
+      <div class="card-label">إجمالي الزكاة المستحقة</div>
+      <div class="card-value" id="totalZakat1">0 جنيه</div>
+      <div class="card-sub">السيناريو الأول (كل صف منفصل)</div>
+    </div>
+  </div>
+
+  <!-- Add Entry Form -->
+  <div class="form-section">
+    <div class="section-title">➕ إضافة قطعة ذهب جديدة</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>الصنف</label>
+        <select id="fType">
+          <option>جنيه</option>
+          <option>نصف جنيه</option>
+          <option>ربع جنيه</option>
+          <option>نص جنيه</option>
+          <option>سبيكة</option>
+          <option>أسورة</option>
+          <option>خاتم</option>
+          <option>قلادة</option>
+          <option>أخرى</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>العيار</label>
+        <select id="fKarat">
+          <option value="21">21</option>
+          <option value="24">24</option>
+          <option value="18">18</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>العدد</label>
+        <input type="number" id="fCount" value="1" min="1" step="1">
+      </div>
+      <div class="form-group">
+        <label>عدد الجرامات (الإجمالي)</label>
+        <input type="number" id="fGrams" value="" min="0.1" step="0.1" placeholder="مثال: 8">
+      </div>
+      <div class="form-group">
+        <label>السعر المدفوع (اختياري)</label>
+        <input type="number" id="fPrice" value="" min="0" step="1" placeholder="جنيه">
+      </div>
+      <div class="form-group">
+        <label>تاريخ الشراء</label>
+        <input type="date" id="fDate">
+      </div>
+      <div class="form-group" style="justify-content:flex-end">
+        <button class="btn btn-gold" onclick="addEntry()">✓ إضافة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="section-title" style="margin:0">📊 سجل الذهب وحسابات الزكاة</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="exportCSV()">⬇ تصدير CSV</button>
+        <button class="btn btn-outline" onclick="clearAll()" style="color:var(--red);border-color:rgba(207,102,121,0.3)">🗑 مسح الكل</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="mainTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>الصنف</th>
+            <th>العيار</th>
+            <th>الجرامات</th>
+            <th>وزن عيار 24</th>
+            <th>التراكمي</th>
+            <th>تاريخ الشراء</th>
+            <th>التاريخ الهجري</th>
+            <th>موعد الزكاة</th>
+            <th class="gold-col scenario-header" data-tip="زكاة كل صف لوحده لو طلعتها في موعدها">ز. السيناريو ①</th>
+            <th class="gold-col scenario-header" data-tip="لو ما طلعتيش أي زكاة وطلعت كل حاجة في تاريخ هذا الصف">ز. السيناريو ②</th>
+            <th>السعر</th>
+            <th>حذف</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr>
+            <td colspan="13">
+              <div class="empty-state">
+                <div class="icon">🥇</div>
+                <p>ابدأ بإضافة أول قطعة ذهب</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot id="tableFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:40px; font-size:12px; color:var(--text2)">
+    <span>① السيناريو الأول: زكاة كل صف بشكل منفصل في موعده الطبيعي</span>
+    <span>② السيناريو الثاني: لو تأخرت وطلعت كل الزكاة في تاريخ هذا الصف معاً (بحساب غرامة التأخير الشهرية)</span>
+    <span style="color:rgba(201,168,76,0.8)">★ الصف المظلل = يوم بلوغ النصاب</span>
+  </div>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3>✏️ تعديل القطعة</h3>
+    <input type="hidden" id="editId">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="form-group" style="grid-column:1/-1">
+        <label>الصنف</label>
+        <select id="eType">
+          <option>جنيه</option><option>نصف جنيه</option><option>ربع جنيه</option>
+          <option>نص جنيه</option><option>سبيكة</option><option>أسورة</option>
+          <option>خاتم</option><option>قلادة</option><option>أخرى</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>العيار</label>
+        <select id="eKarat">
+          <option value="21">21</option>
+          <option value="24">24</option>
+          <option value="18">18</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>العدد</label>
+        <input type="number" id="eCount" min="1" step="1">
+      </div>
+      <div class="form-group">
+        <label>الجرامات</label>
+        <input type="number" id="eGrams" min="0.1" step="0.1">
+      </div>
+      <div class="form-group">
+        <label>السعر المدفوع</label>
+        <input type="number" id="ePrice" min="0" step="1">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>تاريخ الشراء</label>
+        <input type="date" id="eDate">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveEdit()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Data Store ───────────────────────────────────────────────
+let entries = JSON.parse(localStorage.getItem('zakat_entries') || '[]');
+let goldPrice = parseFloat(localStorage.getItem('zakat_price') || '8366');
+const NISAB_GRAMS = 85;
+
+document.getElementById('goldPrice').value = goldPrice;
+document.getElementById('goldPrice').addEventListener('input', function() {
+  goldPrice = parseFloat(this.value) || 0;
+  localStorage.setItem('zakat_price', goldPrice);
+  render();
+});
+
+// Set today as default date
+document.getElementById('fDate').value = new Date().toISOString().slice(0,10);
+
+// ─── Hijri Helpers ────────────────────────────────────────────
+function getHijriComponents(date) {
+  const d = typeof date === 'string' ? new Date(date + 'T12:00:00') : date;
+  const f = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+    year: 'numeric', month: 'numeric', day: 'numeric'
+  });
+  const parts = f.formatToParts(d);
+  return {
+    year: parseInt(parts.find(p=>p.type==='year').value),
+    month: parseInt(parts.find(p=>p.type==='month').value),
+    day: parseInt(parts.find(p=>p.type==='day').value)
+  };
+}
+
+function getHijriString(date) {
+  const d = typeof date === 'string' ? new Date(date + 'T12:00:00') : date;
+  return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+    year: 'numeric', month: 'long', day: 'numeric'
+  }).format(d);
+}
+
+function hijriMonthsDiff(date1, date2) {
+  const h1 = getHijriComponents(date1);
+  const h2 = getHijriComponents(date2);
+  return (h2.year * 12 + h2.month) - (h1.year * 12 + h1.month);
+}
+
+function addOneHijriYear(date) {
+  const d = typeof date === 'string' ? new Date(date + 'T12:00:00') : new Date(date);
+  const h = getHijriComponents(d);
+  const targetYear = h.year + 1;
+  const targetMonth = h.month;
+  const targetDay = h.day;
+
+  // Search in range [+340, +380] days
+  for (let offset = 340; offset <= 380; offset++) {
+    const candidate = new Date(d.getTime() + offset * 86400000);
+    const ch = getHijriComponents(candidate);
+    if (ch.year === targetYear && ch.month === targetMonth && ch.day === targetDay) {
+      return candidate;
+    }
+  }
+  // Fallback: same month/year, any day
+  for (let offset = 340; offset <= 380; offset++) {
+    const candidate = new Date(d.getTime() + offset * 86400000);
+    const ch = getHijriComponents(candidate);
+    if (ch.year === targetYear && ch.month === targetMonth) {
+      return candidate;
+    }
+  }
+  return new Date(d.getTime() + 354 * 86400000);
+}
+
+function formatGreg(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' });
+}
+
+// ─── Calc Engine ──────────────────────────────────────────────
+function getWeight24k(karat, grams) {
+  return (grams * karat) / 24;
+}
+
+function computeAll() {
+  // Sort by date
+  const sorted = [...entries].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  let cumulative = 0;
+  let nisabIndex = -1;
+  let nisabDate = null;
+  let nisabCumulative = 0;
+
+  // First pass: find nisab
+  const rows = sorted.map((e, i) => {
+    const w24 = getWeight24k(e.karat, e.grams);
+    cumulative += w24;
+    const row = { ...e, w24, cumulative: +cumulative.toFixed(4), rowIndex: i };
+    if (nisabIndex === -1 && cumulative >= NISAB_GRAMS) {
+      nisabIndex = i;
+      nisabDate = e.date;
+      nisabCumulative = cumulative;
+      row.isNisabRow = true;
+    }
+    return row;
+  });
+
+  // Second pass: calculate zakat
+  rows.forEach((row, i) => {
+    if (row.cumulative < NISAB_GRAMS && !row.isNisabRow) {
+      row.zakat1 = 0;
+      row.zakat2 = 0;
+      row.zakatDueDate = null;
+    } else {
+      // Zakat due date = this row's date + 1 hijri year
+      row.zakatDueDate = addOneHijriYear(row.date);
+
+      // Scenario 1: independent per row
+      if (row.isNisabRow) {
+        row.zakat1 = row.cumulative * goldPrice * 0.025;
+      } else {
+        row.zakat1 = row.w24 * goldPrice * 0.025;
+      }
+
+      // Scenario 2: as if paying everything on this row's date
+      // = SUM of all zakat1 from nisab to this row
+      // + SUM of (zakat1_j / 12) * hijriMonths(date_j, this_date) for each j < i after nisab
+      let s2 = 0;
+      const rowDate = new Date(row.date + 'T12:00:00');
+
+      for (let j = 0; j <= i; j++) {
+        if (rows[j].cumulative < NISAB_GRAMS && !rows[j].isNisabRow) continue;
+
+        s2 += rows[j].zakat1; // base zakat
+
+        if (j < i) {
+          const prevDate = new Date(rows[j].date + 'T12:00:00');
+          const monthsDiff = hijriMonthsDiff(prevDate, rowDate);
+          if (monthsDiff > 0) {
+            s2 += (rows[j].zakat1 / 12) * monthsDiff;
+          }
+        }
+      }
+      row.zakat2 = s2;
+    }
+  });
+
+  return { rows, nisabDate, nisabCumulative, nisabIndex };
+}
+
+// ─── Render ───────────────────────────────────────────────────
+function render() {
+  const { rows, nisabDate, nisabCumulative } = computeAll();
+  const tbody = document.getElementById('tableBody');
+  const tfoot = document.getElementById('tableFoot');
+
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state"><div class="icon">🥇</div><p>ابدأ بإضافة أول قطعة ذهب</p></div></td></tr>`;
+    tfoot.innerHTML = '';
+    updateSummary(rows, nisabDate, nisabCumulative);
+    return;
+  }
+
+  const monthNames = ['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الثانية','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+
+  tbody.innerHTML = rows.map((row, i) => {
+    const isNisab = row.isNisabRow;
+    const hasZakat = row.zakat1 > 0 || row.isNisabRow;
+
+    const hijriStr = getHijriString(row.date);
+    const zakatDueStr = row.zakatDueDate
+      ? `<div class="greg-date">${row.zakatDueDate.toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'})}</div><div class="hijri-date">${getHijriString(row.zakatDueDate)}</div>`
+      : '<span class="val-zero">—</span>';
+
+    const z1 = row.zakat1 > 0
+      ? `<span class="val-gold">${row.zakat1.toLocaleString('ar-EG', {maximumFractionDigits:2})}</span>`
+      : '<span class="val-zero">0</span>';
+
+    const z2 = row.zakat2 > 0
+      ? `<span class="val-green">${row.zakat2.toLocaleString('ar-EG', {maximumFractionDigits:2})}</span>`
+      : '<span class="val-zero">0</span>';
+
+    const priceDisplay = row.price ? row.price.toLocaleString('ar-EG') : '—';
+
+    return `
+      <tr class="${isNisab ? 'nisab-row' : ''} fade-in" data-id="${row.id}">
+        <td>${i+1}</td>
+        <td>
+          <strong>${row.type}</strong>
+          ${isNisab ? '<br><span class="nisab-badge">★ يوم النصاب</span>' : ''}
+        </td>
+        <td><span class="badge badge-${row.karat === 24 ? '24' : '21'}">${row.karat}</span></td>
+        <td>${row.grams}</td>
+        <td><strong>${row.w24.toFixed(3)}</strong></td>
+        <td>${row.cumulative.toFixed(3)}</td>
+        <td>
+          <div class="greg-date">${formatGreg(row.date)}</div>
+        </td>
+        <td><div class="hijri-date">${hijriStr}</div></td>
+        <td>${zakatDueStr}</td>
+        <td>${z1}</td>
+        <td>${z2}</td>
+        <td>${priceDisplay}</td>
+        <td>
+          <button class="btn btn-danger" onclick="deleteEntry('${row.id}')">🗑</button>
+        </td>
+      </tr>`;
+  }).join('');
+
+  // Totals
+  const totalZ1 = rows.reduce((s, r) => s + (r.zakat1||0), 0);
+  const totalZ2 = rows.length > 0 ? (rows[rows.length-1].zakat2 || 0) : 0;
+  const totalW24 = rows.reduce((s, r) => s + r.w24, 0);
+
+  tfoot.innerHTML = `
+    <tr class="totals-row">
+      <td colspan="4" style="text-align:right">المجموع</td>
+      <td>${totalW24.toFixed(3)} جم</td>
+      <td colspan="4"></td>
+      <td>${totalZ1.toLocaleString('ar-EG', {maximumFractionDigits:2})} جنيه</td>
+      <td>${totalZ2.toLocaleString('ar-EG', {maximumFractionDigits:2})} جنيه</td>
+      <td colspan="2"></td>
+    </tr>`;
+
+  updateSummary(rows, nisabDate, nisabCumulative);
+}
+
+function updateSummary(rows, nisabDate, nisabCumulative) {
+  const totalW24 = rows.reduce((s, r) => s + r.w24, 0);
+  const pct = Math.min(100, (totalW24 / NISAB_GRAMS) * 100);
+  const totalZ1 = rows.reduce((s, r) => s + (r.zakat1||0), 0);
+
+  document.getElementById('totalWeight').textContent = totalW24.toFixed(2) + ' جم';
+  document.getElementById('nisabFill').style.width = pct + '%';
+  document.getElementById('nisabProgress').textContent =
+    totalW24 >= NISAB_GRAMS
+      ? `✅ تجاوزت النصاب بـ ${(totalW24 - NISAB_GRAMS).toFixed(2)} جم`
+      : `متبقي ${(NISAB_GRAMS - totalW24).toFixed(2)} جم للنصاب`;
+
+  if (nisabDate) {
+    document.getElementById('nisabDate').textContent = formatGreg(nisabDate);
+    document.getElementById('nisabHijri').textContent = getHijriString(nisabDate);
+    const dueDate = addOneHijriYear(nisabDate);
+    document.getElementById('zakatDueDate').textContent = dueDate.toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
+    document.getElementById('zakatDueHijri').textContent = getHijriString(dueDate);
+  } else {
+    document.getElementById('nisabDate').textContent = 'لم يبلغ النصاب بعد';
+    document.getElementById('nisabHijri').textContent = '';
+    document.getElementById('zakatDueDate').textContent = '—';
+    document.getElementById('zakatDueHijri').textContent = '';
+  }
+
+  document.getElementById('totalZakat1').textContent =
+    totalZ1.toLocaleString('ar-EG', {maximumFractionDigits:2}) + ' جنيه';
+}
+
+// ─── CRUD ─────────────────────────────────────────────────────
+function addEntry() {
+  const type = document.getElementById('fType').value;
+  const karat = parseInt(document.getElementById('fKarat').value);
+  const count = parseInt(document.getElementById('fCount').value) || 1;
+  const grams = parseFloat(document.getElementById('fGrams').value);
+  const price = parseFloat(document.getElementById('fPrice').value) || 0;
+  const date = document.getElementById('fDate').value;
+
+  if (!grams || !date) {
+    alert('يرجى إدخال الجرامات والتاريخ');
+    return;
+  }
+
+  entries.push({
+    id: Date.now().toString(),
+    type, karat, count, grams, price, date
+  });
+
+  save();
+  render();
+
+  // Reset form
+  document.getElementById('fGrams').value = '';
+  document.getElementById('fPrice').value = '';
+  document.getElementById('fCount').value = '1';
+}
+
+function deleteEntry(id) {
+  if (!confirm('هل تريد حذف هذه القطعة؟')) return;
+  entries = entries.filter(e => e.id !== id);
+  save();
+  render();
+}
+
+function clearAll() {
+  if (!confirm('هل تريد مسح جميع البيانات؟')) return;
+  entries = [];
+  save();
+  render();
+}
+
+function save() {
+  localStorage.setItem('zakat_entries', JSON.stringify(entries));
+}
+
+// ─── Edit Modal ───────────────────────────────────────────────
+function openEdit(id) {
+  const e = entries.find(x => x.id === id);
+  if (!e) return;
+  document.getElementById('editId').value = id;
+  document.getElementById('eType').value = e.type;
+  document.getElementById('eKarat').value = e.karat;
+  document.getElementById('eCount').value = e.count;
+  document.getElementById('eGrams').value = e.grams;
+  document.getElementById('ePrice').value = e.price || '';
+  document.getElementById('eDate').value = e.date;
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.remove('show');
+}
+
+function saveEdit() {
+  const id = document.getElementById('editId').value;
+  const idx = entries.findIndex(x => x.id === id);
+  if (idx === -1) return;
+  entries[idx] = {
+    ...entries[idx],
+    type: document.getElementById('eType').value,
+    karat: parseInt(document.getElementById('eKarat').value),
+    count: parseInt(document.getElementById('eCount').value),
+    grams: parseFloat(document.getElementById('eGrams').value),
+    price: parseFloat(document.getElementById('ePrice').value) || 0,
+    date: document.getElementById('eDate').value,
+  };
+  save();
+  render();
+  closeModal();
+}
+
+// ─── Export CSV ───────────────────────────────────────────────
+function exportCSV() {
+  const { rows } = computeAll();
+  const headers = ['الصنف','العيار','الجرامات','وزن عيار 24','التراكمي','تاريخ الشراء','التاريخ الهجري','موعد الزكاة','زكاة سيناريو 1','زكاة سيناريو 2','السعر المدفوع'];
+  const csv = [headers.join(','), ...rows.map(r => [
+    r.type, r.karat, r.grams, r.w24.toFixed(3), r.cumulative.toFixed(3),
+    r.date, getHijriString(r.date),
+    r.zakatDueDate ? r.zakatDueDate.toISOString().slice(0,10) : '',
+    r.zakat1.toFixed(2), r.zakat2.toFixed(2), r.price || 0
+  ].join(','))].join('\n');
+
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'zakat-gold.csv';
+  a.click();
+}
+
+// ─── Close modal on overlay click ────────────────────────────
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ─── Init ─────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
