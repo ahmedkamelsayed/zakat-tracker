@@ -611,6 +611,10 @@
     <div class="table-header">
       <div class="section-title" style="margin:0">📊 سجل الذهب وحسابات الزكاة</div>
       <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <label class="btn btn-gold" style="cursor:pointer">
+          📥 استيراد Excel
+          <input type="file" id="excelImport" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)">
+        </label>
         <button class="btn btn-outline" onclick="exportCSV()">⬇ تصدير CSV</button>
         <button class="btn btn-outline" onclick="clearAll()" style="color:var(--red);border-color:rgba(207,102,121,0.3)">🗑 مسح الكل</button>
       </div>
@@ -1059,6 +1063,86 @@ function exportCSV() {
 document.getElementById('editModal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
+
+// ─── Import Excel ─────────────────────────────────────────────
+async function importExcel(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (!window.XLSX) {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+      let imported = 0, skipped = 0;
+
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const type    = row[0];
+        const count   = row[1];
+        const karat   = row[2];
+        const grams   = row[3];
+        const price   = row[5];
+        const dateRaw = row[6];
+
+        if (!type || !grams || !dateRaw) { skipped++; continue; }
+
+        let dateStr = '';
+        if (dateRaw instanceof Date) {
+          dateStr = dateRaw.toISOString().slice(0,10);
+        } else if (typeof dateRaw === 'number') {
+          const d = new Date(Math.round((dateRaw - 25569) * 86400 * 1000));
+          dateStr = d.toISOString().slice(0,10);
+        } else if (typeof dateRaw === 'string') {
+          const d = new Date(dateRaw);
+          if (!isNaN(d)) dateStr = d.toISOString().slice(0,10);
+        }
+
+        if (!dateStr) { skipped++; continue; }
+
+        const gramsNum = parseFloat(grams);
+        const karatNum = parseInt(karat);
+        const priceNum = typeof price === 'number' ? price : 0;
+
+        if (!gramsNum || ![18,21,24].includes(karatNum)) { skipped++; continue; }
+
+        entries.push({
+          id: Date.now().toString() + '_' + i,
+          type: String(type),
+          karat: karatNum,
+          count: parseInt(count) || 1,
+          grams: gramsNum,
+          price: priceNum,
+          date: dateStr
+        });
+        imported++;
+      }
+
+      save();
+      render();
+      event.target.value = '';
+
+      alert(imported > 0
+        ? `✅ تم استيراد ${imported} صف بنجاح!` + (skipped > 0 ? `\n⚠️ تم تخطي ${skipped} صف فاضي.` : '')
+        : '⚠️ لم يتم العثور على بيانات صالحة في الملف.');
+
+    } catch(err) {
+      alert('حدث خطأ أثناء قراءة الملف: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
 
 // ─── Init ─────────────────────────────────────────────────────
 render();
