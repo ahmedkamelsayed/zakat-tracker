@@ -39,18 +39,10 @@
         </div>
       </div>
       <div class="price-setting">
-        <label>نصاب المال:</label>
-        <input type="number" id="moneyNisab" value="0" min="1" step="1" readonly>
-        <select id="mainCurrency" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px;font-family:'Tajawal'">
-          <option value="EGP">جنيه مصري</option>
-          <option value="SAR">ريال سعودي</option>
-          <option value="AED">درهم إماراتي</option>
-          <option value="USD">دولار أمريكي</option>
-          <option value="EUR">يورو</option>
-          <option value="GBP">جنيه إسترليني</option>
-          <option value="KWD">دينار كويتي</option>
-        </select>
-        <button class="btn-fetch" onclick="updateMoneyNisab()">🔄 حساب النصاب</button>
+        <label>نصاب المال (ج.م):</label>
+        <input type="number" id="moneyNisab" value="0" min="1" step="1" readonly title="انقر مرتين للتعديل يدوياً">
+        <span id="nisabStatus" style="font-size:11px;color:var(--text2);max-width:200px"></span>
+        <button class="btn-fetch" id="refreshRatesBtn" onclick="refreshRates()">🔄 تحديث الأسعار</button>
       </div>
     </div>
   </div>
@@ -83,7 +75,7 @@
       <span class="card-icon">🧮</span>
       <div class="card-label">الزكاة المستحقة</div>
       <div class="card-value" id="mTotalZakat">0</div>
-      <div class="card-sub">2.5% من إجمالي المال</div>
+      <div class="card-sub">2.5% من إجمالي المال (بالجنيه المصري)</div>
     </div>
   </div>
 
@@ -164,8 +156,10 @@
             <th data-sort="desc">الوصف</th>
             <th data-sort="amount">المبلغ</th>
             <th>العملة</th>
+            <th>سعر الصرف</th>
+            <th>القيمة بالجنيه</th>
             <th>النوع</th>
-            <th>التراكمي</th>
+            <th>التراكمي (ج.م)</th>
             <th data-sort="date">التاريخ</th>
             <th>التاريخ الهجري</th>
             <th>موعد الزكاة</th>
@@ -175,7 +169,7 @@
           </tr>
         </thead>
         <tbody id="moneyBody">
-          <tr><td colspan="12"><div class="empty-state"><div class="icon">💵</div><p>ابدأ بإضافة أول مبلغ مالي</p></div></td></tr>
+          <tr><td colspan="14"><div class="empty-state"><div class="icon">💵</div><p>ابدأ بإضافة أول مبلغ مالي</p></div></td></tr>
         </tbody>
         <tfoot id="moneyFoot"></tfoot>
       </table>
