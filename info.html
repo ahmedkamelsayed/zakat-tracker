@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة الزكاة - معلومات وأسئلة شائعة</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="logo-icon">🌙</div>
+      <span>حاسبة الزكاة</span>
+    </a>
+    <button class="nav-toggle" aria-label="القائمة">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">🥇 زكاة الذهب</a></li>
+      <li><a href="money.html">💵 زكاة المال</a></li>
+      <li><a href="info.html" class="active">📖 معلومات وأسئلة</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Alert Banner -->
+<div id="alertBanner" class="alert-banner"></div>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">📖</div>
+        <div class="logo-text">
+          <h1>معلومات عن الزكاة</h1>
+          <p>تعريف الزكاة وأحكامها والأسئلة الشائعة</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('info')">📖 معلومات عن الزكاة</button>
+    <button class="tab-btn" onclick="switchTab('faq')">❓ أسئلة شائعة</button>
+  </div>
+
+  <!-- Info Tab -->
+  <div class="tab-content active" id="tab-info">
+
+    <div class="info-section">
+      <h2>تعريف الزكاة</h2>
+      <p>الزكاة ركن من أركان الإسلام الخمسة، وهي حق معلوم في المال يُخرج لمستحقيه. فرضها الله تعالى على المسلمين تطهيراً لأموالهم وأنفسهم، وتحقيقاً للتكافل الاجتماعي.</p>
+
+      <div class="verse-box">
+        خُذْ مِنْ أَمْوَالِهِمْ صَدَقَةً تُطَهِّرُهُمْ وَتُزَكِّيهِم بِهَا وَصَلِّ عَلَيْهِمْ ۖ إِنَّ صَلَاتَكَ سَكَنٌ لَّهُمْ
+        <span class="verse-ref">سورة التوبة: 103</span>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h2>شروط وجوب الزكاة</h2>
+      <ol>
+        <li><strong>الإسلام</strong> — الزكاة فريضة على المسلمين فقط</li>
+        <li><strong>الحرية</strong> — تجب على الحر دون المملوك</li>
+        <li><strong>بلوغ النصاب</strong> — أن يبلغ المال النصاب المحدد شرعاً</li>
+        <li><strong>حولان الحول</strong> — مرور سنة هجرية كاملة على المال بعد بلوغ النصاب</li>
+        <li><strong>الملك التام</strong> — أن يكون المال مملوكاً ملكاً تاماً</li>
+        <li><strong>النماء</strong> — أن يكون المال قابلاً للزيادة</li>
+        <li><strong>الفضل عن الحوائج الأصلية</strong> — أن يكون زائداً عن الحاجات الأساسية</li>
+      </ol>
+    </div>
+
+    <div class="info-section">
+      <h2>نصاب الزكاة</h2>
+
+      <h3>نصاب الذهب</h3>
+      <p>النصاب في الذهب هو <strong>85 جراماً من الذهب عيار 24</strong> (أو ما يعادل 20 مثقالاً). إذا ملك المسلم هذا القدر أو أكثر وحال عليه الحول وجبت فيه الزكاة بنسبة <strong>2.5%</strong>.</p>
+
+      <h3>نصاب الفضة</h3>
+      <p>النصاب في الفضة هو <strong>595 جراماً</strong> (أو ما يعادل 200 درهم). والعلماء يرجحون حساب نصاب المال بالذهب لأنه أنفع للفقراء.</p>
+
+      <h3>نصاب المال</h3>
+      <p>نصاب المال النقدي = ما يعادل <strong>85 جراماً من الذهب عيار 24</strong> بسعر السوق الحالي. يتغير هذا المبلغ بتغير سعر الذهب.</p>
+    </div>
+
+    <div class="info-section">
+      <h2>مقدار الزكاة</h2>
+      <p>مقدار الزكاة الواجبة في الذهب والفضة والنقود هو <strong>ربع العُشر (2.5%)</strong>.</p>
+      <p>أي: إذا كان لديك 100,000 جنيه وبلغت النصاب وحال الحول، فالزكاة = 100,000 × 2.5% = <strong>2,500 جنيه</strong>.</p>
+    </div>
+
+    <div class="info-section">
+      <h2>مصارف الزكاة — الأصناف الثمانية</h2>
+      <div class="verse-box">
+        إِنَّمَا الصَّدَقَاتُ لِلْفُقَرَاءِ وَالْمَسَاكِينِ وَالْعَامِلِينَ عَلَيْهَا وَالْمُؤَلَّفَةِ قُلُوبُهُمْ وَفِي الرِّقَابِ وَالْغَارِمِينَ وَفِي سَبِيلِ اللَّهِ وَابْنِ السَّبِيلِ ۖ فَرِيضَةً مِّنَ اللَّهِ ۗ وَاللَّهُ عَلِيمٌ حَكِيمٌ
+        <span class="verse-ref">سورة التوبة: 60</span>
+      </div>
+
+      <div class="category-card">
+        <h4>1. الفقراء</h4>
+        <p>من لا يجدون كفايتهم ولا نصف كفايتهم من المال والطعام والمسكن.</p>
+      </div>
+      <div class="category-card">
+        <h4>2. المساكين</h4>
+        <p>من يجدون نصف كفايتهم أو أكثرها لكن لا يجدون كفايتهم كاملة.</p>
+      </div>
+      <div class="category-card">
+        <h4>3. العاملون عليها</h4>
+        <p>من يتولون جمع الزكاة وتوزيعها والقيام بشؤونها.</p>
+      </div>
+      <div class="category-card">
+        <h4>4. المؤلفة قلوبهم</h4>
+        <p>من يُرجى إسلامهم أو تثبيتهم على الإسلام أو كف شرهم عن المسلمين.</p>
+      </div>
+      <div class="category-card">
+        <h4>5. في الرقاب</h4>
+        <p>تحرير العبيد والأسرى والمكاتبين. وفي العصر الحديث يشمل فك أسر المظلومين.</p>
+      </div>
+      <div class="category-card">
+        <h4>6. الغارمون</h4>
+        <p>من تراكمت عليهم الديون ولا يستطيعون سدادها، سواء لمصلحة أنفسهم أو لإصلاح ذات البين.</p>
+      </div>
+      <div class="category-card">
+        <h4>7. في سبيل الله</h4>
+        <p>الجهاد في سبيل الله بمعناه الواسع، ويشمل نشر العلم والدعوة.</p>
+      </div>
+      <div class="category-card">
+        <h4>8. ابن السبيل</h4>
+        <p>المسافر الذي انقطعت به السبل ولم يجد ما يكفيه للعودة إلى بلده، حتى وإن كان غنياً في بلده.</p>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h2>آداب إخراج الزكاة</h2>
+      <ul>
+        <li>إخراجها في وقتها وعدم تأخيرها</li>
+        <li>إخراجها طيبة بها النفس من غير منّ ولا أذى</li>
+        <li>إخفاؤها أفضل من إظهارها إلا لمصلحة</li>
+        <li>إعطاؤها للأقارب الذين لا تجب نفقتهم أولى</li>
+        <li>التحري عن المستحقين</li>
+        <li>عدم احتساب الديون المشكوك في تحصيلها من الزكاة</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- FAQ Tab -->
+  <div class="tab-content" id="tab-faq">
+
+    <div class="faq-search">
+      <input type="text" id="faqSearch" placeholder="ابحث في الأسئلة..." oninput="filterFAQ()">
+      <select id="faqCategory" onchange="filterFAQ()">
+        <option value="">كل الفئات</option>
+        <option value="general">أحكام عامة</option>
+        <option value="gold">زكاة الذهب</option>
+        <option value="money">زكاة المال</option>
+        <option value="calculation">طريقة الحساب</option>
+        <option value="app">استخدام التطبيق</option>
+      </select>
+    </div>
+
+    <div id="faqContainer">
+      <!-- General -->
+      <div class="faq-item" data-category="general">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>ما الفرق بين الزكاة والصدقة؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            الزكاة فرض واجب بنسبة محددة (2.5%) على أموال بعينها عند بلوغ النصاب وحولان الحول، ولها مصارف محددة (8 أصناف). أما الصدقة فهي تطوعية بأي مبلغ في أي وقت ولأي محتاج.
+            <span class="faq-tag">أحكام عامة</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="general">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>هل يجوز تأخير إخراج الزكاة عن موعدها؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            الأصل أن الزكاة تجب على الفور عند حولان الحول. يجوز التأخير لعذر كعدم وجود المستحق أو انتظار قريب محتاج. لكن التأخير بلا عذر مأثم. وبعض العلماء يرى وجوب إخراج زكاة إضافية عن فترة التأخير.
+            <span class="faq-tag">أحكام عامة</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="general">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>هل تجب الزكاة على الأطفال؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            نعم عند جمهور العلماء، تجب الزكاة في مال الصبي إذا بلغ النصاب وحال عليه الحول، ويخرجها وليّه من ماله.
+            <span class="faq-tag">أحكام عامة</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="general">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>هل يجوز إخراج الزكاة لغير المسلمين؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            الزكاة في الأصل للمسلمين. لكن يجوز إعطاء المؤلفة قلوبهم منها وهم قد يكونون غير مسلمين يُرجى إسلامهم. أما الصدقة التطوعية فتجوز لأي محتاج.
+            <span class="faq-tag">أحكام عامة</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gold -->
+      <div class="faq-item" data-category="gold">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>هل تجب الزكاة على ذهب الزينة (الحلي)؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            اختلف العلماء في ذلك. ذهب الحنفية إلى وجوب الزكاة في الحلي المعدّ للاستعمال إذا بلغ النصاب. وذهب الجمهور (المالكية والشافعية والحنابلة) إلى عدم وجوبها في الحلي المباح المستعمل. والأحوط إخراجها.
+            <span class="faq-tag">زكاة الذهب</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="gold">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>كيف أحسب وزن الذهب بعيار 24؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            المعادلة: وزن عيار 24 = (الوزن الفعلي × العيار) ÷ 24<br>
+            مثال: 10 جرام عيار 21 = (10 × 21) ÷ 24 = 8.75 جرام عيار 24<br>
+            التطبيق يقوم بهذا الحساب تلقائياً.
+            <span class="faq-tag">زكاة الذهب</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="gold">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>لماذا النصاب 85 جراماً؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            النصاب الشرعي للذهب هو 20 مثقالاً، والمثقال يساوي 4.25 جرام. فيكون النصاب = 20 × 4.25 = 85 جراماً من الذهب الخالص (عيار 24).
+            <span class="faq-tag">زكاة الذهب</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="gold">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>هل أحسب الزكاة بسعر الشراء أم السعر الحالي؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            تحسب الزكاة بسعر الذهب يوم إخراج الزكاة (السعر الحالي)، وليس بسعر الشراء. لأن الزكاة تجب في قيمة المال وقت الوجوب.
+            <span class="faq-tag">زكاة الذهب</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Money -->
+      <div class="faq-item" data-category="money">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>كيف أحسب نصاب زكاة المال؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            نصاب المال = 85 جرام ذهب × سعر الجرام الحالي (عيار 24).<br>
+            مثلاً: لو سعر الجرام 5000 جنيه، فالنصاب = 85 × 5000 = 425,000 جنيه.<br>
+            يمكنك استخدام زر "حساب النصاب" في صفحة زكاة المال لتحديثه تلقائياً.
+            <span class="faq-tag">زكاة المال</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="money">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>هل تجب الزكاة على المال المدّخر للزواج أو شراء بيت؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            نعم، المال المدّخر تجب فيه الزكاة إذا بلغ النصاب وحال عليه الحول، بغض النظر عن الغرض من الادخار. لأن شرط الزكاة هو ملك النصاب وحولان الحول.
+            <span class="faq-tag">زكاة المال</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="money">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>هل أحسب الزكاة قبل أو بعد خصم الديون؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            اختلف العلماء: جمهور المتقدمين يرون خصم الديون الحالّة من المال قبل حساب الزكاة. وبعض المعاصرين يرون عدم خصمها. الأحوط أن تخصم الديون المستحقة فوراً فقط.
+            <span class="faq-tag">زكاة المال</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="money">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>عندي أموال بعملات مختلفة، كيف أحسب الزكاة؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            تُجمع جميع الأموال النقدية بتحويلها إلى عملة واحدة بسعر الصرف يوم إخراج الزكاة. إذا بلغ المجموع النصاب تجب الزكاة على الجميع. التطبيق يدعم ذلك.
+            <span class="faq-tag">زكاة المال</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculation -->
+      <div class="faq-item" data-category="calculation">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>ما الفرق بين السيناريو الأول والثاني في التطبيق؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            <strong>السيناريو الأول:</strong> حساب زكاة كل قطعة/مبلغ بشكل منفصل في موعدها الطبيعي (بعد مرور حول هجري).<br>
+            <strong>السيناريو الثاني:</strong> لو تأخرت في إخراج الزكاة وأردت إخراج كل المستحق في تاريخ معين، يتم حساب غرامة تأخير شهرية (2.5% ÷ 12 لكل شهر تأخير هجري).
+            <span class="faq-tag">طريقة الحساب</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="calculation">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>كيف يتم حساب الحول الهجري؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            الحول الهجري = 12 شهراً قمرياً (حوالي 354 يوماً). التطبيق يستخدم تقويم أم القرى الرسمي لحساب التاريخ الهجري بدقة، وليس مجرد إضافة 354 يوماً.
+            <span class="faq-tag">طريقة الحساب</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="calculation">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>ماذا لو نقص مالي عن النصاب خلال الحول ثم زاد مرة أخرى؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            إذا نقص المال عن النصاب خلال الحول ثم بلغه مرة أخرى، يبدأ حساب الحول من جديد من تاريخ بلوغ النصاب الثاني عند جمهور العلماء.
+            <span class="faq-tag">طريقة الحساب</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- App -->
+      <div class="faq-item" data-category="app">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>هل بياناتي محفوظة بأمان؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            نعم، جميع البيانات محفوظة محلياً على جهازك فقط (localStorage). لا يتم إرسال أي بيانات لأي خادم. إذا مسحت بيانات المتصفح ستفقد البيانات، لذا يُنصح بتصدير CSV بشكل دوري كنسخة احتياطية.
+            <span class="faq-tag">استخدام التطبيق</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="app">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>كيف أستورد بيانات من Excel؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            في صفحة زكاة الذهب، اضغط "استيراد Excel". يجب أن يحتوي الملف على الأعمدة التالية بالترتيب:<br>
+            A = الصنف، B = العدد، C = العيار، D = الجرامات، F = السعر، G = التاريخ<br>
+            السطر الأول يُعتبر عنواناً ويتم تخطيه.
+            <span class="faq-tag">استخدام التطبيق</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="app">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>كيف يعمل تنبيه الزكاة؟</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            عند فتح أي صفحة في التطبيق، يتم فحص مواعيد الزكاة تلقائياً. إذا كانت الزكاة متأخرة أو قادمة خلال 30 يوماً، يظهر شريط تنبيه أعلى الصفحة باللون الأحمر (متأخرة) أو الذهبي (قريبة).
+            <span class="faq-tag">استخدام التطبيق</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="js/hijri.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script>
+// ─── Tab Switching ────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ─── FAQ Toggle ───────────────────────────────────────────────
+function toggleFAQ(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+// ─── FAQ Filter ───────────────────────────────────────────────
+function filterFAQ() {
+  const search = document.getElementById('faqSearch').value.toLowerCase();
+  const category = document.getElementById('faqCategory').value;
+  const items = document.querySelectorAll('.faq-item');
+
+  items.forEach(item => {
+    const text = item.querySelector('.faq-question span').textContent.toLowerCase() +
+                 item.querySelector('.faq-answer-inner').textContent.toLowerCase();
+    const cat = item.dataset.category;
+
+    const matchSearch = !search || text.includes(search);
+    const matchCat = !category || cat === category;
+
+    item.classList.toggle('hidden', !(matchSearch && matchCat));
+  });
+}
+</script>
+</body>
+</html>

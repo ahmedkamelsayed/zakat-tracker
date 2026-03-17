@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة الزكاة - زكاة المال</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="logo-icon">🌙</div>
+      <span>حاسبة الزكاة</span>
+    </a>
+    <button class="nav-toggle" aria-label="القائمة">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">🥇 زكاة الذهب</a></li>
+      <li><a href="money.html" class="active">💵 زكاة المال</a></li>
+      <li><a href="info.html">📖 معلومات وأسئلة</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Alert Banner -->
+<div id="alertBanner" class="alert-banner"></div>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">💵</div>
+        <div class="logo-text">
+          <h1>حاسبة زكاة المال</h1>
+          <p>تتبع أموالك واحسب زكاتها وفق التقويم الهجري</p>
+        </div>
+      </div>
+      <div class="price-setting">
+        <label>نصاب المال:</label>
+        <input type="number" id="moneyNisab" value="0" min="1" step="1" readonly>
+        <select id="mainCurrency" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px;font-family:'Tajawal'">
+          <option value="EGP">جنيه مصري</option>
+          <option value="SAR">ريال سعودي</option>
+          <option value="AED">درهم إماراتي</option>
+          <option value="USD">دولار أمريكي</option>
+          <option value="EUR">يورو</option>
+          <option value="GBP">جنيه إسترليني</option>
+          <option value="KWD">دينار كويتي</option>
+        </select>
+        <button class="btn-fetch" onclick="updateMoneyNisab()">🔄 حساب النصاب</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Summary Cards -->
+  <div class="cards">
+    <div class="card">
+      <span class="card-icon">💰</span>
+      <div class="card-label">إجمالي المدخرات</div>
+      <div class="card-value" id="mTotalSavings">0</div>
+      <div class="nisab-bar"><div class="nisab-fill" id="mNisabFill" style="width:0%"></div></div>
+      <div class="card-sub" id="mNisabProgress">النصاب: حدّث السعر أولاً</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">📅</span>
+      <div class="card-label">تاريخ بلوغ النصاب</div>
+      <div class="card-value" id="mNisabDate">—</div>
+      <div class="card-sub" id="mNisabHijri"></div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔔</span>
+      <div class="card-label">موعد إخراج الزكاة</div>
+      <div class="card-value" id="mZakatDueDate">—</div>
+      <div class="card-sub" id="mZakatDueHijri"></div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🧮</span>
+      <div class="card-label">الزكاة المستحقة</div>
+      <div class="card-value" id="mTotalZakat">0</div>
+      <div class="card-sub">2.5% من إجمالي المال</div>
+    </div>
+  </div>
+
+  <!-- Add Money Entry -->
+  <div class="form-section">
+    <div class="section-title">➕ إضافة مبلغ مالي</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>الوصف</label>
+        <input type="text" id="mDesc" placeholder="مثال: راتب، مكافأة، ادخار">
+      </div>
+      <div class="form-group">
+        <label>المبلغ</label>
+        <input type="number" id="mAmount" min="0" step="0.01" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>العملة</label>
+        <select id="mCurrency">
+          <option value="EGP">جنيه مصري (EGP)</option>
+          <option value="SAR">ريال سعودي (SAR)</option>
+          <option value="AED">درهم إماراتي (AED)</option>
+          <option value="USD">دولار أمريكي (USD)</option>
+          <option value="EUR">يورو (EUR)</option>
+          <option value="GBP">جنيه إسترليني (GBP)</option>
+          <option value="KWD">دينار كويتي (KWD)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>النوع</label>
+        <select id="mType">
+          <option value="income">إيداع / دخل</option>
+          <option value="expense">سحب / مصروف</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>التاريخ</label>
+        <input type="date" id="mDate">
+      </div>
+      <div class="form-group" style="justify-content:flex-end">
+        <button class="btn btn-gold" onclick="addMoneyEntry()">✓ إضافة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="section-title" style="margin:0">📊 سجل المال وحسابات الزكاة</div>
+      <div class="table-actions">
+        <button class="btn btn-outline" onclick="exportMoneyCSV()">⬇ تصدير CSV</button>
+        <button class="btn btn-outline" onclick="printReport()">🖨️ طباعة</button>
+        <button class="btn btn-outline" onclick="clearAllMoney()" style="color:var(--red);border-color:rgba(207,102,121,0.3)">🗑 مسح الكل</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>تصفية العملة:
+        <select id="mFilterCurrency" onchange="renderMoney()">
+          <option value="">الكل</option>
+          <option value="EGP">EGP</option>
+          <option value="SAR">SAR</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+        </select>
+      </label>
+      <label>النوع:
+        <select id="mFilterType" onchange="renderMoney()">
+          <option value="">الكل</option>
+          <option value="income">إيداع</option>
+          <option value="expense">سحب</option>
+        </select>
+      </label>
+    </div>
+    <div class="table-wrap">
+      <table id="moneyTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th data-sort="desc">الوصف</th>
+            <th data-sort="amount">المبلغ</th>
+            <th>العملة</th>
+            <th>النوع</th>
+            <th>التراكمي</th>
+            <th data-sort="date">التاريخ</th>
+            <th>التاريخ الهجري</th>
+            <th>موعد الزكاة</th>
+            <th class="gold-col scenario-header">ز. السيناريو ①</th>
+            <th class="gold-col scenario-header">ز. السيناريو ②</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="moneyBody">
+          <tr><td colspan="12"><div class="empty-state"><div class="icon">💵</div><p>ابدأ بإضافة أول مبلغ مالي</p></div></td></tr>
+        </tbody>
+        <tfoot id="moneyFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:32px; font-size:12px; color:var(--text2)">
+    <span>① السيناريو الأول: زكاة كل مبلغ بشكل منفصل في موعده</span>
+    <span>② السيناريو الثاني: لو تأخرت وطلعت كل الزكاة في تاريخ هذا الصف</span>
+  </div>
+
+  <!-- Annual Summary -->
+  <div class="annual-summary" id="mAnnualSummary" style="display:none">
+    <div class="section-title">📅 ملخص سنوي هجري</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>السنة الهجرية</th>
+            <th>عدد المعاملات</th>
+            <th>إجمالي الإيداعات</th>
+            <th>إجمالي السحوبات</th>
+            <th>الزكاة المستحقة</th>
+          </tr>
+        </thead>
+        <tbody id="mAnnualBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-container" id="mChartSection" style="display:none">
+    <div class="section-title">📈 نمو المدخرات عبر الزمن</div>
+    <canvas id="moneyChart" height="300"></canvas>
+  </div>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="moneyEditModal">
+  <div class="modal">
+    <h3>✏️ تعديل المعاملة</h3>
+    <input type="hidden" id="meId">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="form-group" style="grid-column:1/-1">
+        <label>الوصف</label>
+        <input type="text" id="meDesc">
+      </div>
+      <div class="form-group">
+        <label>المبلغ</label>
+        <input type="number" id="meAmount" min="0" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>العملة</label>
+        <select id="meCurrency">
+          <option value="EGP">EGP</option>
+          <option value="SAR">SAR</option>
+          <option value="AED">AED</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="KWD">KWD</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>النوع</label>
+        <select id="meType">
+          <option value="income">إيداع</option>
+          <option value="expense">سحب</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>التاريخ</label>
+        <input type="date" id="meDate">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeMoneyModal()">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveMoneyEdit()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="js/hijri.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/money.js"></script>
+</body>
+</html>
